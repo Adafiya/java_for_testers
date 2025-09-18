@@ -2,23 +2,34 @@ package ru.stqa.geometry;
 
 public class Triangle {
 
-//Периметр треугольника
-    static void printPerimeterTriangle(double a, double b, double c){
-      System.out.println(String.format("Периметр треугольника со сторонами %f, %f, %f = %f", a, b, c, getP(a, b, c)));
-    }
+  public double a, b, c;
 
-  public static double getP(double a, double b, double c) {
-    return a + b + c;
+  public Triangle(double a, double b, double c) {
+    this.a = a;
+    this.b = b;
+    this.c = c;
+  }
+
+  //Периметр треугольника
+  static void printPerimeterTriangle(Triangle s) {
+    System.out.println(
+        String.format("Периметр треугольника со сторонами %f, %f, %f = %f", s.a, s.b, s.c, s.getP()));
+  }
+
+  public double getP() {
+    return this.a + this.b + this.c;
   }
 
   //Площадь треугольника
-    static void printAreaTriangle(double a, double b, double c){
-      System.out.println(String.format("Площадь треугольника со сторонами %f, %f, %f = %f", a, b, c, getS(a, b, c)));
-    }
+  static void printAreaTriangle(Triangle s) {
+    System.out.println(
+        String.format("Площадь треугольника со сторонами %f, %f, %f = %f", s.a, s.b, s.c, s.getS()));
+  }
 
-  public static double getS(double a, double b, double c) {
-    double p = getP(a, b, c) / 2;
-    double s = Math.sqrt(p * (p - a) * (p - b) * (p - c));
+
+  public double getS() {
+    double p = (this.a + this.b + this.c) / 2;
+    double s = Math.sqrt(p * (p - this.a) * (p - this.b) * (p - this.c));
     return Math.round(s);
   }
 }

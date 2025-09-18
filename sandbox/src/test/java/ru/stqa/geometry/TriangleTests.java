@@ -5,15 +5,18 @@ import org.junit.jupiter.api.Assertions;
 
 public class TriangleTests {
 
+
   @Test
     //Тест на площадь треугольника
-  void canAreaTriangle(){
-    Assertions.assertEquals(11.0, Triangle.getS(5.0, 5.0,5.0));
+  void canAreaTriangle() {
+    var s = new Triangle(5.0, 5.0, 5.0);
+    Assertions.assertEquals(11.0, s.getS());
   }
 
   @Test
     //Тест на периметр треугольника
-  void canPerimeterTriangle(){
-    Assertions.assertEquals(15.0, Triangle.getP(5.0, 5.0,5.0));
+  void canPerimeterTriangle() {
+    var s = new Triangle(5.0, 5.0, 5.0);
+    Assertions.assertEquals(15.0, s.getP());
   }
 }
