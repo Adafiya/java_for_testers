@@ -41,4 +41,28 @@ public class TriangleTests {
       //OK
     }
   }
+
+  @Test
+    //Тест на сравнение одинаковых треугольников
+  void testEqualityIdenticalTriangles(){
+    var s1 = new Triangle(5.0,6.0,7.0);
+    var s2 = new Triangle(5.0,6.0,7.0);
+    Assertions.assertTrue(s1.equals(s2));
+  }
+
+  @Test
+    //Тест на сравнение треугольников с равными сторонами
+  void testEqualityTrianglesWithEqualSides(){
+    var s1 = new Triangle(5.0,6.0,7.0);
+    var s2 = new Triangle(7.0,5.0,6.0);
+    Assertions.assertTrue(s1.equals(s2));
+  }
+
+@Test
+  //Тест треугольника с не равными сторонами
+  void testNotEquality(){
+    var s1 = new Triangle(5.0,6.0,7.0);
+    var s2 = new Triangle(6.0,6.0,7.0);
+    Assertions.assertNotEquals(s1,s2);
+  }
 }

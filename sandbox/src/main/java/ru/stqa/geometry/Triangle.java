@@ -1,5 +1,7 @@
 package ru.stqa.geometry;
 
+import java.util.Objects;
+
 public class Triangle {
 
   public double a, b, c;
@@ -39,6 +41,44 @@ public class Triangle {
     double s = Math.sqrt(p * (p - this.a) * (p - this.b) * (p - this.c));
     return Math.round(s * 100.0) / 100.0;
 
+  }
+
+  //Свой метод сравнения
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    //Приведение типов
+    Triangle triangle = (Triangle) o;
+    return (Double.compare(this.a, triangle.a) == 0
+        && Double.compare(this.b, triangle.b) == 0
+        && Double.compare(this.c, triangle.c) == 0) ||
+
+        (Double.compare(this.b, triangle.a) == 0
+        && Double.compare(this.c, triangle.b) == 0
+        && Double.compare(this.a, triangle.c) == 0) ||
+
+        (Double.compare(this.c, triangle.a) == 0
+        && Double.compare(this.b, triangle.b) == 0
+        && Double.compare(this.a, triangle.c) == 0) ||
+
+        (Double.compare(this.a, triangle.a) == 0
+        && Double.compare(this.c, triangle.b) == 0
+        && Double.compare(this.b, triangle.c) == 0)||
+
+        (Double.compare(this.b, triangle.a) == 0
+        && Double.compare(this.a, triangle.b) == 0
+        && Double.compare(this.c, triangle.c) == 0)||
+
+        (Double.compare(this.c, triangle.a) == 0
+        && Double.compare(this.a, triangle.b) == 0
+        && Double.compare(this.b, triangle.c) == 0);
+  }
+
+  @Override
+  public int hashCode() {
+    return 1;
   }
 }
 
