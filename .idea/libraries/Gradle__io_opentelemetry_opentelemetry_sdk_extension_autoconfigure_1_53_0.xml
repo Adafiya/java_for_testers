@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:1.53.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="io.opentelemetry" artifactId="opentelemetry-sdk-extension-autoconfigure" version="1.53.0" baseVersion="1.53.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.opentelemetry/opentelemetry-sdk-extension-autoconfigure/1.53.0/c708fa8294ffa0a1452ef29c442d804246ca6e35/opentelemetry-sdk-extension-autoconfigure-1.53.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
