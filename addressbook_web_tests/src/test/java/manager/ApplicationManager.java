@@ -1,35 +1,59 @@
-import model.GroupData;
+package manager;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class ApplicationManager {
 
-  protected static WebDriver driver;
-
-  //Разлогин
-  static void logout() {
-
-    driver.findElement(By.linkText("Logout")).click();
-    driver.quit();
-  }
+  protected WebDriver driver;
+  private LoginHelper session;
+  private GroupHelper groups;
+  private ContactHelper contact;
 
   //Логин
-  void init() {
+  public void init(String browser) {
+    //Проверка браузера
     if (driver == null) {
-      driver = new FirefoxDriver();
+      if ("firefox".equals(browser)) {
+        driver = new FirefoxDriver();
+      } else if ("chrome".equals(browser)) {
+        driver = new ChromeDriver();
+      } else {
+        throw new IllegalArgumentException(String.format("Unknown browser %s", browser));
+      }
       driver.get("http://localhost/addressbook/");
       driver.manage().window().setSize(new Dimension(1140, 1032));
-      driver.findElement(By.name("user")).sendKeys("admin");
-      driver.findElement(By.name("pass")).sendKeys("secret");
-      driver.findElement(By.xpath("//input[@value=\'Login\']")).click();
+      session().login("admin", "secret");
     }
   }
 
+  public LoginHelper session() {
+    if (session == null) {
+      session = new LoginHelper(this);
+    }
+    return session;
+  }
+
+  public GroupHelper groups() {
+    if (groups == null) {
+      groups = new GroupHelper(this);
+    }
+    return groups;
+  }
+
+  public ContactHelper contact() {
+    if (contact == null) {
+      contact = new ContactHelper(this);
+    }
+    return contact;
+  }
+
   //Ищем элемент
-  protected boolean isElementPresent(By locator) {
+  public boolean isElementPresent(By locator) {
     try {
       driver.findElement(locator);
       return true;
@@ -38,35 +62,4 @@ public class ApplicationManager {
     }
   }
 
-  //Создаем группу
-  protected void createGroup(GroupData group) {
-    driver.findElement(By.name("new")).click();
-    driver.findElement(By.name("group_name")).click();
-    driver.findElement(By.name("group_name")).sendKeys(group.name());
-    driver.findElement(By.name("group_header")).click();
-    driver.findElement(By.name("group_header")).sendKeys(group.header());
-    driver.findElement(By.name("group_footer")).click();
-    driver.findElement(By.name("group_footer")).sendKeys(group.footer());
-    driver.findElement(By.name("submit")).click();
-    driver.findElement(By.linkText("groups")).click();
-  }
-
-  //Открываем страницу групп
-  protected void openGroupsPage() {
-    if (!isElementPresent(By.name("new"))) {
-      driver.findElement(By.linkText("groups")).click();
-    }
-  }
-
-  //Проверка наличия групп
-  protected boolean isGroupPresent() {
-    return isElementPresent(By.name("selected[]"));
-  }
-
-  //Удаляем группу
-  protected void removeGroup() {
-    driver.findElement(By.name("selected[]")).click();
-    driver.findElement(By.name("delete")).click();
-    driver.findElement(By.linkText("group page")).click();
-  }
 }
