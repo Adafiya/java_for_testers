@@ -25,8 +25,11 @@ public class ApplicationManager {
       } else {
         throw new IllegalArgumentException(String.format("Unknown browser %s", browser));
       }
+      //Разлогин и закрытие браузера
+      Runtime.getRuntime().addShutdownHook(new Thread(driver::quit));
       driver.get("http://localhost/addressbook/");
       driver.manage().window().setSize(new Dimension(1140, 1032));
+      //Логин
       session().login("admin", "secret");
     }
   }
