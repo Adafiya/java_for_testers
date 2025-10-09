@@ -1,5 +1,7 @@
 package manager;
 
+import java.util.ArrayList;
+import java.util.List;
 import model.GroupData;
 import org.openqa.selenium.By;
 
@@ -16,39 +18,32 @@ public class GroupHelper extends HelperBase {
     }
   }
 
-  //Проверить наличие групп
-  public boolean isGroupPresent() {
-    openGroupsPage();
-    return manager.isElementPresent(By.name("selected[]"));
-  }
-
   //Создать группу
   public void createGroup(GroupData group) {
     openGroupsPage();
     initGroupCreation();
     fillGroupForm(group);
     submitGroupCreation();
-    returnToGroupPage();
+    openGroupsPage();
   }
 
   //Удалить группу
-  public void removeGroup() {
+  public void removeGroup(GroupData group) {
     openGroupsPage();
-    selectGroup();
-    removeSelectedGroup();
+    selectGroup(group);
+    removeSelectedGroups();
     returnToGroupPage();
   }
 
   //Редактировать группу
-  public void modifyGroup(GroupData modifiedGroup) {
+  public void modifyGroup(GroupData group, GroupData modifiedGroup) {
     openGroupsPage();
-    selectGroup();
+    selectGroup(group);
     initGroupModification();
     fillGroupForm(modifiedGroup);
     submitGroupModification();
     returnToGroupPage();
   }
-
 
   //Подтвердить создание группы
   private void submitGroupCreation() {
@@ -63,10 +58,9 @@ public class GroupHelper extends HelperBase {
 
 
   //Нажать кнопку удаления группу
-  private void removeSelectedGroup() {
+  private void removeSelectedGroups() {
     click(By.name("delete"));
   }
-
 
   //Перейти на страницу с группами
   private void returnToGroupPage() {
@@ -85,15 +79,56 @@ public class GroupHelper extends HelperBase {
     type(By.name("group_footer"), group.footer());
   }
 
-
   //Нажать кнопку редактирования группы
   private void initGroupModification() {
     click(By.name("edit"));
   }
 
   //Выбрать группу
-  private void selectGroup() {
-    click(By.name("selected[]"));
+  private void selectGroup(GroupData group) {
+    click(By.cssSelector(String.format("input[value='%s']", group.id())));
   }
 
+  //Считать сколько было групп
+  public int getCount() {
+    openGroupsPage();
+    return manager.driver.findElements(By.name("selected[]")).size();
+  }
+
+  //Удальть все группы разом
+  public void removeAllGroups() {
+    selectAllGroups();
+    removeSelectedGroups();
+    openGroupsPage();
+  }
+
+  //Выбор всех групп
+  private void selectAllGroups() {
+    var checkboxes = manager.driver.findElements(By.name("selected[]"));
+    for (var checkbox : checkboxes) {
+      checkbox.click();
+    }
+  }
+
+  //Получить список всех групп (их id и name)
+  public List<GroupData> getList() {
+    openGroupsPage();
+    var groups = new ArrayList<GroupData>();
+    var spans = manager.driver.findElements(By.cssSelector("span.group")); //тег span класс group
+    for (var span : spans) {
+      var name = span.getText();
+      var checkbox = span.findElement(By.name("selected[]"));
+      var id = checkbox.getAttribute("value");
+      groups.add(new GroupData().withId(id).withName(name));
+    }
+    return groups;
+  }
+
+   /*
+  //Проверить наличие групп
+  public boolean isGroupPresent() {
+    openGroupsPage();
+    return manager.isElementPresent(By.name("selected[]"));
+  }
+  */
 }

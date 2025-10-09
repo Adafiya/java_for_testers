@@ -1,9 +1,6 @@
 package manager;
 
-import static tests.TestBase.app;
-
 import model.ContactData;
-import model.GroupData;
 import org.openqa.selenium.By;
 
 public class ContactHelper extends HelperBase {
@@ -17,14 +14,17 @@ public class ContactHelper extends HelperBase {
     click(By.linkText("home"));
   }
 
+  /*
   //Проверить наличие контактов
   public boolean isContactPresent() {
     openContactPage();
     return manager.isElementPresent(By.name("selected[]"));
   }
+  */
 
   //Создать контакт
   public void createContact(ContactData contact) {
+    openContactPage();
     initContactCreation();
     fillContactForm(contact);
     submitContactCreation();
@@ -35,17 +35,13 @@ public class ContactHelper extends HelperBase {
   public void removeContact() {
     openContactPage();
     selectContact();
-    removeSelectedContact();
-    //Не поняла зачем и куда подставлять строчку. И без нее все работает, а с ней ловлю исключение NoAlertPresentException
-    //app.driver.switchTo().alert().accept();
+    removeSelectedContacts();
   }
-
 
   //Подтвердить создание контакта
   private void submitContactCreation() {
     click(By.xpath("(//input[@name=\'submit\'])[2]"));
   }
-
 
   //Нажать кнопку создания нового контакта
   private void initContactCreation() {
@@ -54,7 +50,7 @@ public class ContactHelper extends HelperBase {
 
 
   //Нажать кнопку удаления контакта
-  private void removeSelectedContact() {
+  private void removeSelectedContacts() {
     click(By.name("delete"));
   }
 
@@ -69,8 +65,27 @@ public class ContactHelper extends HelperBase {
   //Выбрать контакт
   private void selectContact() {
     click(By.name("selected[]"));
-
   }
 
+  //Считать сколько было контактов
+  public int getCount() {
+    openContactPage();
+    return manager.driver.findElements(By.name("selected[]")).size();
+  }
+
+  //Удальть все группы разом
+  public void removeAllContacts() {
+    selectAllContacts();
+    removeSelectedContacts();
+    openContactPage();
+  }
+
+  //Выбор всех контактов
+  private void selectAllContacts() {
+    var checkboxes = manager.driver.findElements(By.name("selected[]"));
+    for (var checkbox : checkboxes) {
+      checkbox.click();
+    }
+  }
 }
 
