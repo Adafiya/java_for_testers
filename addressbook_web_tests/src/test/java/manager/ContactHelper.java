@@ -42,6 +42,17 @@ public class ContactHelper extends HelperBase {
     openContactPage();
   }
 
+
+  //Редактировать контакт
+  public void modifyGroup(ContactData contact, ContactData modifiedContact) {
+    openContactPage();
+    selectContact(contact);
+    initContactModification();
+    fillContactForm(modifiedContact);
+    submitContactModification();
+    openContactPage();
+  }
+
   //Подтвердить создание контакта
   private void submitContactCreation() {
     click(By.xpath("(//input[@name=\'submit\'])[2]"));
@@ -52,12 +63,10 @@ public class ContactHelper extends HelperBase {
     click(By.linkText("add new"));
   }
 
-
   //Нажать кнопку удаления контакта
   private void removeSelectedContacts() {
     click(By.name("delete"));
   }
-
 
   //Заполнить форму контактов
   private void fillContactForm(ContactData contact) {
@@ -92,6 +101,16 @@ public class ContactHelper extends HelperBase {
     }
   }
 
+  //Нажать кнопку редактирования контакта
+  private void initContactModification() {
+    click(By.xpath("//img[@alt=\'Edit\']"));
+  }
+
+  //Нажать кнопку подтверждения обновиления контакта
+  private void submitContactModification() {
+    click(By.xpath("(//input[@name=\'update\'])[2]"));
+  }
+
   //Получить список всех контактов (их id и name)
   public List<ContactData> getList() {
     openContactPage();
@@ -99,11 +118,13 @@ public class ContactHelper extends HelperBase {
     var checkboxes = manager.driver.findElements(By.name("selected[]"));
     for (var checkbox : checkboxes) {
       var id = checkbox.getAttribute("value");
-      var name = checkbox.getAttribute("title");
-      //var lastname = manager.driver.findElement(By.cssSelector("tr:nth-child(2) > td:nth-child(2)"));
-      //var firstname = manager.driver.findElement(By.cssSelector("tr:nth-child(2) > td:nth-child(3)"));
-      contacts.add(new ContactData().withId(String.valueOf(id)).withLastname(
-          String.valueOf(name)));
+//      var name = checkbox.getAttribute("title");
+//      var size = contacts.size() + 2;
+//      var a = "tr:nth-child(" + (contacts.size() + 2)+ ") > td:nth-child(2)";
+//      var lastname = checkbox.getCssValue(String.valueOf(By.cssSelector("tr.center")));
+//      var firstname = checkbox.getCssValue(String.valueOf(By.cssSelector("td:nth-child(3)")));
+      contacts.add(new ContactData().withId(String.valueOf(id)));
+      //.withLastname(String.valueOf(lastname)).withFirstname(String.valueOf(firstname)));
     }
     return contacts;
   }
