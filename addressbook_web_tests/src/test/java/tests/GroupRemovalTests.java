@@ -1,6 +1,7 @@
 package tests;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Random;
 import model.GroupData;
 import org.junit.jupiter.api.Assertions;
@@ -29,6 +30,11 @@ public class GroupRemovalTests extends TestBase {
     var newGroups = app.groups().getList();
     var expectedList = new ArrayList<>(oldGroups);
     expectedList.remove(index);
+    Comparator<GroupData> compareById = (o1, o2) -> {
+      return Integer.compare(Integer.parseInt(o1.id()), Integer.parseInt(o2.id()));
+    };
+    newGroups.sort(compareById);
+    expectedList.sort(compareById);
     Assertions.assertEquals(newGroups, expectedList); // Сравнение всех id и name списков до и после
     //Assertions.assertEquals(newGroups.size() - 1, oldGroups.size()); // Сравнение размера списков до и после
   }

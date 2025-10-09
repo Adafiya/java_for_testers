@@ -1,6 +1,9 @@
 package manager;
 
+import java.util.ArrayList;
+import java.util.List;
 import model.ContactData;
+import model.GroupData;
 import org.openqa.selenium.By;
 
 public class ContactHelper extends HelperBase {
@@ -32,10 +35,11 @@ public class ContactHelper extends HelperBase {
   }
 
   //Удалить контакт
-  public void removeContact() {
+  public void removeContact(ContactData contact) {
     openContactPage();
-    selectContact();
+    selectContact(contact);
     removeSelectedContacts();
+    openContactPage();
   }
 
   //Подтвердить создание контакта
@@ -63,8 +67,8 @@ public class ContactHelper extends HelperBase {
   }
 
   //Выбрать контакт
-  private void selectContact() {
-    click(By.name("selected[]"));
+  private void selectContact(ContactData contact) {
+    click(By.cssSelector(String.format("input[value='%s']", contact.id())));
   }
 
   //Считать сколько было контактов
@@ -86,6 +90,22 @@ public class ContactHelper extends HelperBase {
     for (var checkbox : checkboxes) {
       checkbox.click();
     }
+  }
+
+  //Получить список всех контактов (их id и name)
+  public List<ContactData> getList() {
+    openContactPage();
+    var contacts = new ArrayList<ContactData>();
+    var checkboxes = manager.driver.findElements(By.name("selected[]"));
+    for (var checkbox : checkboxes) {
+      var id = checkbox.getAttribute("value");
+      var name = checkbox.getAttribute("title");
+      //var lastname = manager.driver.findElement(By.cssSelector("tr:nth-child(2) > td:nth-child(2)"));
+      //var firstname = manager.driver.findElement(By.cssSelector("tr:nth-child(2) > td:nth-child(3)"));
+      contacts.add(new ContactData().withId(String.valueOf(id)).withLastname(
+          String.valueOf(name)));
+    }
+    return contacts;
   }
 }
 
