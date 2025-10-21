@@ -1,5 +1,6 @@
 package manager;
 
+import java.util.Properties;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoSuchElementException;
@@ -13,9 +14,11 @@ public class ApplicationManager {
   private LoginHelper session;
   private GroupHelper groups;
   private ContactHelper contact;
+  private Properties properties;
 
   //Логин
-  public void init(String browser) {
+  public void init(String browser, Properties properties) {
+    this.properties = properties;
     //Проверка браузера
     if (driver == null) {
       if ("firefox".equals(browser)) {
@@ -28,10 +31,11 @@ public class ApplicationManager {
       //Разлогин и закрытие браузера
       Runtime.getRuntime().addShutdownHook(new Thread(driver::quit));
       //Открытие страницы
-      driver.get("http://localhost/addressbook/");
+      driver.get(properties.getProperty("web.baseUrl"));
       driver.manage().window().setSize(new Dimension(1140, 1032));
       //Логин
-      session().login("admin", "secret");
+      session().login(properties.getProperty("web.username"),
+          properties.getProperty("web.password"));
     }
   }
 
@@ -65,5 +69,4 @@ public class ApplicationManager {
       return false;
     }
   }
-
 }

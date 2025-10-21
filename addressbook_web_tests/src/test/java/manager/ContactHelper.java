@@ -41,7 +41,6 @@ public class ContactHelper extends HelperBase {
     openContactPage();
   }
 
-
   //Редактировать контакт
   public void modifyContact(ContactData contact, ContactData modifiedContact) {
     openContactPage();
@@ -72,6 +71,7 @@ public class ContactHelper extends HelperBase {
     type(By.name("firstname"), contact.firstname());
     type(By.name("middlename"), contact.middlename());
     type(By.name("lastname"), contact.lastname());
+    attach(By.name("photo"), contact.photo());
   }
 
   //Выбрать контакт

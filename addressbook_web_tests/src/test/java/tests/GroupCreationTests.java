@@ -1,5 +1,16 @@
 package tests;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import common.CommonFunctions;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -10,7 +21,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class GroupCreationTests extends TestBase {
 
-  public static List<GroupData> groupProvider() {
+  public static List<GroupData> groupProvider() throws IOException {
     var result = new ArrayList<GroupData>();
     for (var name : List.of("", "group_name")) {
       for (var header : List.of("", "group_header")) {
@@ -19,12 +30,28 @@ public class GroupCreationTests extends TestBase {
         }
       }
     }
-    for (int i = 0; i < 5; i++) {
-      result.add(new GroupData()
-          .withName(randomString(i * 10))
-          .withHeader(randomString(i * 10))
-          .withFooter(randomString(i * 10)));
-    }
+
+    //Читаем данные из сгенерированного файла
+//    var json = "";
+//    try (var reader = new FileReader("groups.json");
+//    var breader = new BufferedReader(reader)) {
+//      var line = breader.readLine();
+//      while (line != null) {
+//        json = json + line;
+//        line = breader.readLine();
+//      }
+//    }
+
+//Читаем данные из сгенерированного файла json
+//    var json = Files.readString(Paths.get("groups.json"));
+//    ObjectMapper mapper = new ObjectMapper();
+//    var value = mapper.readValue(json, new TypeReference<List<GroupData>>() {});
+//Читаем данные из сгенерированного файла xml
+    var mapper = new XmlMapper();
+    var value = mapper.readValue(new File("groups.xml"), new TypeReference<List<GroupData>>() {
+    });
+//Добавляем все значения в список
+    result.addAll(value);
     return result;
   }
 

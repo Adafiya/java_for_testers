@@ -1,31 +1,44 @@
 package tests;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import model.ContactData;
+import model.GroupData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class ContactCreationTests extends TestBase {
 
-  public static List<ContactData> contactProvider() {
+  public static List<ContactData> contactProvider() throws IOException {
     var result = new ArrayList<ContactData>();
     for (var firstname : List.of("", "firstname")) {
       for (var middlename : List.of("", "middlename")) {
         for (var lastname : List.of("", "lastname")) {
-          result.add(new ContactData().withFirstname(firstname).withMiddlename(middlename)
-              .withLastname(lastname));
+          for (var photo : List.of(randomFile("src/test/resources/images"))) {
+            result.add(new ContactData().withFirstname(firstname).withMiddlename(middlename)
+                .withLastname(lastname).withPhoto(photo));
+          }
         }
       }
     }
-    for (int i = 0; i < 5; i++) {
-      result.add(new ContactData()
-          .withFirstname(randomString(i * 10))
-          .withMiddlename(randomString(i * 10))
-          .withLastname(randomString(i * 10)));
-    }
+//Читаем данные из сгенерированного файла json
+    var mapper = new ObjectMapper();
+    var value = mapper.readValue(Files.readString(Paths.get("contacts.json")),
+        new TypeReference<List<ContactData>>() {});
+//Читаем данные из сгенерированного файла xml
+//    var mapper = new XmlMapper();
+//    var value = mapper.readValue(new File("contacts.xml"), new TypeReference<List<ContactData>>() {});
+//Добавляем все значения в список
+    result.addAll(value);
     return result;
   }
 
@@ -41,8 +54,7 @@ public class ContactCreationTests extends TestBase {
     newContacts.sort(compareById);
     var expectedList = new ArrayList<>(oldContacts);
     expectedList.add(
-        contact.withId(newContacts.get(newContacts.size() - 1).id()).withFirstname("")
-            .withMiddlename(""));
+        contact.withId(newContacts.get(newContacts.size() - 1).id()));
     expectedList.sort(compareById);
     Assertions.assertEquals(newContacts, newContacts);
   }
