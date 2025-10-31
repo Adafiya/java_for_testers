@@ -18,8 +18,10 @@ public class GroupRemovalTests extends TestBase {
     Assertions.assertEquals(0, app.groups().getCount());
   }
 
+  //Удалить группу через список
   @Test
   public void canRemoveGroupWithList() {
+    //Создание группы через список
     if (app.groups().getCount() == 0) {
       app.groups().createGroup(new GroupData("", "group name", "group header", "group_footer"));
     }
@@ -28,6 +30,29 @@ public class GroupRemovalTests extends TestBase {
     var index = rnd.nextInt(oldGroups.size());
     app.groups().removeGroup(oldGroups.get(index));
     var newGroups = app.groups().getList();
+    var expectedList = new ArrayList<>(oldGroups);
+    expectedList.remove(index);
+    Comparator<GroupData> compareById = (o1, o2) -> {
+      return Integer.compare(Integer.parseInt(o1.id()), Integer.parseInt(o2.id()));
+    };
+    newGroups.sort(compareById);
+    expectedList.sort(compareById);
+    Assertions.assertEquals(newGroups, expectedList); // Сравнение всех id и name списков до и после
+    //Assertions.assertEquals(newGroups.size() - 1, oldGroups.size()); // Сравнение размера списков до и после
+  }
+
+  //Удалить группу с БД
+  @Test
+  public void canRemoveGroupWithJdbc() {
+    //Создание группы через БД
+    if (app.hbm().getGroupCount() == 0) {
+      app.hbm().createGroup(new GroupData("", "group name", "group header", "group_footer"));
+    }
+    var oldGroups = app.hbm().getGroupList();
+    var rnd = new Random();
+    var index = rnd.nextInt(oldGroups.size());
+    app.groups().removeGroup(oldGroups.get(index));
+    var newGroups = app.hbm().getGroupList();
     var expectedList = new ArrayList<>(oldGroups);
     expectedList.remove(index);
     Comparator<GroupData> compareById = (o1, o2) -> {

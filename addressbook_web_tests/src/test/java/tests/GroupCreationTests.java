@@ -61,6 +61,7 @@ public class GroupCreationTests extends TestBase {
     return result;
   }
 
+  //Тест создания групп с проеркой списка групп на странице UI
   @ParameterizedTest
   @MethodSource("groupProvider")
   public void canCreateMultipleGroups(GroupData group) {
@@ -76,6 +77,33 @@ public class GroupCreationTests extends TestBase {
         group.withId(newGroups.get(newGroups.size() - 1).id()).withHeader("").withFooter(""));
     expectedList.sort(compareById);
     Assertions.assertEquals(newGroups, expectedList);
+  }
+
+  //Создаем одну рандомную группу
+  public static List<GroupData> singleRandomGroup() {
+    return List.of(new GroupData()
+          .withName(CommonFunctions.randomString(10))
+          .withHeader(CommonFunctions.randomString(20))
+          .withFooter(CommonFunctions.randomString(30)));
+  }
+  //Тест создания группы с проеркой группы в БД
+  @ParameterizedTest
+  @MethodSource("singleRandomGroup")
+  public void canCreateGroupsWishJdbc(GroupData group) {
+    var oldGroups = app.hbm().getGroupList();
+    app.groups().createGroup(group);
+    var newGroups = app.hbm().getGroupList();
+    Comparator<GroupData> compareById = (o1, o2) -> {
+      return Integer.compare(Integer.parseInt(o1.id()), Integer.parseInt(o2.id()));
+    };
+    newGroups.sort(compareById);
+    var maxId = newGroups.get(newGroups.size() - 1).id();
+    var expectedList = new ArrayList<>(oldGroups);
+    expectedList.add(
+        group.withId(maxId));
+    expectedList.sort(compareById);
+    Assertions.assertEquals(newGroups, expectedList);
+
   }
 
   @ParameterizedTest
