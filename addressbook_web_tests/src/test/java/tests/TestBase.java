@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.Random;
 import manager.ApplicationManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 public class TestBase {
@@ -30,5 +31,11 @@ public class TestBase {
     var rnd = new Random();
     var index = rnd.nextInt(fileNames.length);
     return Paths.get(dir, fileNames[index]).toString();
+  }
+
+  @AfterEach
+  //Проверка консистентности БД
+  void checkDatabaseConsistency() {
+    app.jdbc().checkConsistyncy();
   }
 }

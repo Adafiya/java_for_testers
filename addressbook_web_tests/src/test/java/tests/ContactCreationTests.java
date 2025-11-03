@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import model.ContactData;
+import model.GroupData;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -86,6 +88,26 @@ public class ContactCreationTests extends TestBase {
         contact.withId(newContacts.get(newContacts.size() - 1).id()));
     expectedList.sort(compareById);
     Assertions.assertEquals(newContacts, newContacts);
+  }
+
+  //Тест вхождения контакта в группу
+  @Test
+  void canCreateContactInGroup() {
+    var contact = new ContactData()
+        .withLastname(CommonFunctions.randomString(10))
+        .withMiddlename(CommonFunctions.randomString(10))
+        .withFirstname(CommonFunctions.randomString(10));
+    //.withPhoto(randomFile("src/test/resources/images"));
+    if (app.hbm().getGroupCount() == 0) {
+      app.hbm().createGroup(new GroupData("", "group name", "group header", "group footer"));
+    }
+    //Выбираем группу, в которую будет включен контакт
+    var group = app.hbm().getGroupList().get(0);
+    var oldRelated = app.hbm().getContactsInGroup(group);
+    app.contact().createContact(contact, group);
+    var newRelated = app.hbm().getContactsInGroup(group);
+    Assertions.assertEquals(oldRelated.size() + 1,
+        newRelated.size()); //Переделать на полноценную проверку со всем содержимым
   }
 
   /*
