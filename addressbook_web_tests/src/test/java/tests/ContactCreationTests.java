@@ -3,6 +3,7 @@ package tests;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import common.CommonFunctions;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,6 +18,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class ContactCreationTests extends TestBase {
 
+  //Создаем много контактов
   public static List<ContactData> contactProvider() throws IOException {
     var result = new ArrayList<ContactData>();
     for (var firstname : List.of("", "firstname")) {
@@ -32,7 +34,8 @@ public class ContactCreationTests extends TestBase {
 //Читаем данные из сгенерированного файла json
     var mapper = new ObjectMapper();
     var value = mapper.readValue(Files.readString(Paths.get("contacts.json")),
-        new TypeReference<List<ContactData>>() {});
+        new TypeReference<List<ContactData>>() {
+        });
 //Читаем данные из сгенерированного файла xml
 //    var mapper = new XmlMapper();
 //    var value = mapper.readValue(new File("contacts.xml"), new TypeReference<List<ContactData>>() {});
@@ -41,12 +44,39 @@ public class ContactCreationTests extends TestBase {
     return result;
   }
 
+  //Тест создания контакта с проверкой списка контактов на странице UI
   @ParameterizedTest
   @MethodSource("contactProvider")
-  public void canCreateMultipleContacts(ContactData contact) {
+  public void canCreateMultipleContactsWithUI(ContactData contact) {
     var oldContacts = app.contact().getList();
     app.contact().createContact(contact);
     var newContacts = app.contact().getList();
+    Comparator<ContactData> compareById = (o1, o2) -> {
+      return Integer.compare(Integer.parseInt(o1.id()), Integer.parseInt(o2.id()));
+    };
+    newContacts.sort(compareById);
+    var expectedList = new ArrayList<>(oldContacts);
+    expectedList.add(
+        contact.withId(newContacts.get(newContacts.size() - 1).id()));
+    expectedList.sort(compareById);
+    Assertions.assertEquals(newContacts, newContacts);
+  }
+
+  //Создаем один рандомный контакт
+  public static List<ContactData> singleRandomContact() {
+    return List.of(new ContactData()
+        .withLastname(CommonFunctions.randomString(10))
+        .withMiddlename(CommonFunctions.randomString(10))
+        .withFirstname(CommonFunctions.randomString(10)));
+  }
+
+  //Тест создания контакта с проверкой контакта в БД
+  @ParameterizedTest
+  @MethodSource("singleRandomContact")
+  public void canCreateMultipleContactsWithJdbc(ContactData contact) {
+    var oldContacts = app.hbm().getContactList();
+    app.contact().createContact(contact);
+    var newContacts = app.hbm().getContactList();
     Comparator<ContactData> compareById = (o1, o2) -> {
       return Integer.compare(Integer.parseInt(o1.id()), Integer.parseInt(o2.id()));
     };

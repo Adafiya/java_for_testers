@@ -30,6 +30,5 @@ public class TestBase {
     var rnd = new Random();
     var index = rnd.nextInt(fileNames.length);
     return Paths.get(dir, fileNames[index]).toString();
-
   }
 }

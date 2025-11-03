@@ -1,4 +1,4 @@
-package manager;
+package manager.hbm;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

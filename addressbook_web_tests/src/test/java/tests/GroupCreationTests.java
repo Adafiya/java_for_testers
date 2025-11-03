@@ -21,6 +21,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class GroupCreationTests extends TestBase {
 
+  //Создаем много групп
   public static List<GroupData> groupProvider() throws IOException {
     var result = new ArrayList<GroupData>();
     for (var name : List.of("", "group_name")) {
@@ -61,10 +62,10 @@ public class GroupCreationTests extends TestBase {
     return result;
   }
 
-  //Тест создания групп с проеркой списка групп на странице UI
+  //Тест создания групп с проверкой списка групп на странице UI
   @ParameterizedTest
   @MethodSource("groupProvider")
-  public void canCreateMultipleGroups(GroupData group) {
+  public void canCreateMultipleGroupsWithUI(GroupData group) {
     var oldGroups = app.groups().getList();
     app.groups().createGroup(group);
     var newGroups = app.groups().getList();
@@ -82,11 +83,12 @@ public class GroupCreationTests extends TestBase {
   //Создаем одну рандомную группу
   public static List<GroupData> singleRandomGroup() {
     return List.of(new GroupData()
-          .withName(CommonFunctions.randomString(10))
-          .withHeader(CommonFunctions.randomString(20))
-          .withFooter(CommonFunctions.randomString(30)));
+        .withName(CommonFunctions.randomString(10))
+        .withHeader(CommonFunctions.randomString(20))
+        .withFooter(CommonFunctions.randomString(30)));
   }
-  //Тест создания группы с проеркой группы в БД
+
+  //Тест создания группы с проверкой группы в БД
   @ParameterizedTest
   @MethodSource("singleRandomGroup")
   public void canCreateGroupsWishJdbc(GroupData group) {
@@ -103,7 +105,6 @@ public class GroupCreationTests extends TestBase {
         group.withId(maxId));
     expectedList.sort(compareById);
     Assertions.assertEquals(newGroups, expectedList);
-
   }
 
   @ParameterizedTest
