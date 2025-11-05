@@ -99,23 +99,44 @@ public class ContactCreationTests extends TestBase {
   public void addContactToGroup() {
     //Создаем контакт через БД, если его нет
     if (app.hbm().getContactCount() == 0) {
-      app.hbm().createContact(
-          new ContactData("", "firstname", "middlename", "lastname", ""));
+      app.hbm().createContact(new ContactData("", "firstname", "middlename", "lastname", ""));
     }
     //Создание группы через БД, если ее нет
     if (app.hbm().getGroupCount() == 0) {
       app.hbm().createGroup(new GroupData("", "group name", "group header", "group_footer"));
     }
+    ContactData indexContact = null;
     //Выбираем группу, в которую будет включен контакт
     var group = app.hbm().getGroupList().get(0);
     var contacts = app.hbm().getContactList();
-    var rndContact = new Random();
-    var indexContact = rndContact.nextInt(contacts.size());
+    //Перебираем список контактов
+    for (var contact : contacts) {
+      //Проверяем есть ли контакт в группе
+      if (!app.hbm().getContactsInGroup(group).contains(contact)) {
+        indexContact = contact;
+        //Как только находим подходящий контакт выходим из цикла
+        break;
+      }
+    }
+    //Если нет контактов без группы, то создаем такой контакт и берем его
+    if (indexContact == null) {
+      app.contact().createContact(new ContactData().withFirstname("firstname").withMiddlename("middlename").withLastname("lastname"));
+      //app.hbm().createContact(new ContactData("", "firstname", "middlename", "lastname", "")); //Разобраться почему такое создание контакта не работает
+      contacts = app.hbm().getContactList();
+      //Перебираем список контактов повторно (подумать как не повторть код)
+      for (var contact : contacts) {
+        //Проверяем есть ли контакт в группе
+        if (!app.hbm().getContactsInGroup(group).contains(contact)) {
+          indexContact = contact;
+          //Как только находим подходящий контакт выходим из цикла
+          break;
+        }
+      }
+    }
     var oldRelated = app.hbm().getContactsInGroup(group);
-    app.contact().addContactToGroup(contacts.get(indexContact), group);
+    app.contact().addContactToGroup(indexContact, group);
     var newRelated = app.hbm().getContactsInGroup(group);
-    Assertions.assertEquals(oldRelated.size() + 1,
-        newRelated.size()); //Проверка что кол-во связей стало на 1 больше
+    Assertions.assertEquals(oldRelated.size() + 1,newRelated.size()); //Проверка что кол-во связей стало на 1 больше
   }
 
   /*
