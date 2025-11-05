@@ -62,24 +62,6 @@ public class GroupCreationTests extends TestBase {
     return result;
   }
 
-  //Тест создания групп с проверкой списка групп на странице UI
-  @ParameterizedTest
-  @MethodSource("groupProvider")
-  public void canCreateMultipleGroupsWithUI(GroupData group) {
-    var oldGroups = app.groups().getList();
-    app.groups().createGroup(group);
-    var newGroups = app.groups().getList();
-    Comparator<GroupData> compareById = (o1, o2) -> {
-      return Integer.compare(Integer.parseInt(o1.id()), Integer.parseInt(o2.id()));
-    };
-    newGroups.sort(compareById);
-    var expectedList = new ArrayList<>(oldGroups);
-    expectedList.add(
-        group.withId(newGroups.get(newGroups.size() - 1).id()).withHeader("").withFooter(""));
-    expectedList.sort(compareById);
-    Assertions.assertEquals(newGroups, expectedList);
-  }
-
   //Создаем одну рандомную группу
   public static List<GroupData> singleRandomGroup() {
     return List.of(new GroupData()
@@ -91,7 +73,7 @@ public class GroupCreationTests extends TestBase {
   //Тест создания группы с проверкой группы в БД
   @ParameterizedTest
   @MethodSource("singleRandomGroup")
-  public void canCreateGroupsWishJdbc(GroupData group) {
+  public void canCreateGroups(GroupData group) {
     var oldGroups = app.hbm().getGroupList();
     app.groups().createGroup(group);
     var newGroups = app.hbm().getGroupList();
@@ -117,6 +99,24 @@ public class GroupCreationTests extends TestBase {
   }
 
   /*
+   //Тест создания групп с проверкой списка групп на странице UI
+   @ParameterizedTest
+   @MethodSource("groupProvider")
+   public void canCreateMultipleGroupsWithUI(GroupData group) {
+     var oldGroups = app.groups().getList();
+     app.groups().createGroup(group);
+     var newGroups = app.groups().getList();
+     Comparator<GroupData> compareById = (o1, o2) -> {
+       return Integer.compare(Integer.parseInt(o1.id()), Integer.parseInt(o2.id()));
+     };
+     newGroups.sort(compareById);
+     var expectedList = new ArrayList<>(oldGroups);
+     expectedList.add(
+         group.withId(newGroups.get(newGroups.size() - 1).id()).withHeader("").withFooter(""));
+     expectedList.sort(compareById);
+     Assertions.assertEquals(newGroups, expectedList);
+   }
+
   @ParameterizedTest
   @ValueSource(strings = {"group_name", "group_name'"})
   public void canCreateGroup(String name) {

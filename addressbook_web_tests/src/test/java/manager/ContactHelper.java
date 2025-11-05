@@ -45,11 +45,6 @@ public class ContactHelper extends HelperBase {
     openContactPage();
   }
 
-  //Находить группы при создании контактов
-  private void selectGroup(GroupData group) {
-    new Select(manager.driver.findElement(By.name("new_group"))).selectByValue(group.id());
-  }
-
   //Удалить контакт
   public void removeContact(ContactData contact) {
     openContactPage();
@@ -66,6 +61,54 @@ public class ContactHelper extends HelperBase {
     fillContactForm(modifiedContact);
     submitContactModification();
     openContactPage();
+  }
+
+  //Добавить контакт в группу
+  public void addContactToGroup(ContactData contact, GroupData group) {
+    openContactPage();
+    selectContact(contact);
+    chooseGroup(group);
+    addToGroup(contact);
+    openContactPage();
+  }
+
+  //Удалить контакт из группы
+  public void removeContactFromGroup(ContactData contact, GroupData group) {
+    openContactPage();
+    chooseGroupForRemove(group);
+    selectContact(contact);
+    removeFromGroup();
+    openContactPage();
+  }
+
+  //Находить группы при создании контактов (выбор группы)
+  private void selectGroup(GroupData group) {
+    //Работа с выпадающими списками new Select
+    new Select(manager.driver.findElement(By.name("new_group"))).selectByValue(group.id());
+  }
+
+  //Выбрать группу, куда добавить контакт
+  private void chooseGroup(GroupData group) {
+    //Выбрать группу
+    //click(By.name("to_group"));
+    new Select(manager.driver.findElement(By.name("to_group"))).selectByValue(group.id());
+  }
+
+  //Выбрать группу, куда добавить контакт при удалении
+  private void chooseGroupForRemove(GroupData group) {
+    //Выбрать группу
+    //click(By.name("group"));
+    new Select(manager.driver.findElement(By.name("group"))).selectByValue(group.id());
+  }
+
+  //Добавить контакт в группу
+  private void addToGroup(ContactData contact) {
+    click(By.name("add"));
+  }
+
+  //Удалить контакт из группы
+  private void removeFromGroup() {
+    click(By.name("remove"));
   }
 
   //Подтвердить создание контакта

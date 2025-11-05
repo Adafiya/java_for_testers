@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
 import model.ContactData;
+import model.GroupData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -38,5 +39,28 @@ public class ContactRemovalTests extends TestBase {
     }
     app.contact().removeAllContacts();
     Assertions.assertEquals(0, app.contact().getCount());
+  }
+
+  //Тест удаления контакта в группу
+  @Test
+  public void removeContactToGroup() {
+    //Создаем контакт через БД, если его нет
+    if (app.hbm().getContactCount() == 0) {
+      app.hbm().createContact(
+          new ContactData("", "firstname", "middlename", "lastname", ""));
+    }
+    //Создание группы через БД, если ее нет
+    if (app.hbm().getGroupCount() == 0) {
+      app.hbm().createGroup(new GroupData("", "group name", "group header", "group_footer"));
+    }
+    //Выбираем группу, в которую будет включен контакт
+    var group = app.hbm().getGroupList().get(0);
+    var oldContacts = app.hbm().getContactList();
+    var rndContact = new Random();
+    var indexContact = rndContact.nextInt(oldContacts.size());
+    app.contact().removeContactFromGroup(oldContacts.get(indexContact), group);
+    var newContacts = app.hbm().getContactList();
+    Assertions.assertEquals(oldContacts.size(),
+        newContacts.size()); //Проверка что количество контактов не изменилось. Переделать на полноценную проверку со всем содержимым
   }
 }

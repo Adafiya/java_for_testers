@@ -11,12 +11,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import model.ContactData;
 import model.GroupData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openqa.selenium.By;
 
 public class ContactCreationTests extends TestBase {
 
@@ -46,24 +48,6 @@ public class ContactCreationTests extends TestBase {
     return result;
   }
 
-  //Тест создания контакта с проверкой списка контактов на странице UI
-  @ParameterizedTest
-  @MethodSource("contactProvider")
-  public void canCreateMultipleContactsWithUI(ContactData contact) {
-    var oldContacts = app.contact().getList();
-    app.contact().createContact(contact);
-    var newContacts = app.contact().getList();
-    Comparator<ContactData> compareById = (o1, o2) -> {
-      return Integer.compare(Integer.parseInt(o1.id()), Integer.parseInt(o2.id()));
-    };
-    newContacts.sort(compareById);
-    var expectedList = new ArrayList<>(oldContacts);
-    expectedList.add(
-        contact.withId(newContacts.get(newContacts.size() - 1).id()));
-    expectedList.sort(compareById);
-    Assertions.assertEquals(newContacts, newContacts);
-  }
-
   //Создаем один рандомный контакт
   public static List<ContactData> singleRandomContact() {
     return List.of(new ContactData()
@@ -75,7 +59,7 @@ public class ContactCreationTests extends TestBase {
   //Тест создания контакта с проверкой контакта в БД
   @ParameterizedTest
   @MethodSource("singleRandomContact")
-  public void canCreateMultipleContactsWithJdbc(ContactData contact) {
+  public void canCreateMultipleContacts(ContactData contact) {
     var oldContacts = app.hbm().getContactList();
     app.contact().createContact(contact);
     var newContacts = app.hbm().getContactList();
@@ -90,7 +74,7 @@ public class ContactCreationTests extends TestBase {
     Assertions.assertEquals(newContacts, newContacts);
   }
 
-  //Тест вхождения контакта в группу
+  //Тест создания контакта с вхожденим контакта в группу
   @Test
   void canCreateContactInGroup() {
     var contact = new ContactData()
@@ -110,7 +94,48 @@ public class ContactCreationTests extends TestBase {
         newRelated.size()); //Переделать на полноценную проверку со всем содержимым
   }
 
+  //Тест добавления контакта в группу
+  @Test
+  public void addContactToGroup() {
+    //Создаем контакт через БД, если его нет
+    if (app.hbm().getContactCount() == 0) {
+      app.hbm().createContact(
+          new ContactData("", "firstname", "middlename", "lastname", ""));
+    }
+    //Создание группы через БД, если ее нет
+    if (app.hbm().getGroupCount() == 0) {
+      app.hbm().createGroup(new GroupData("", "group name", "group header", "group_footer"));
+    }
+    //Выбираем группу, в которую будет включен контакт
+    var group = app.hbm().getGroupList().get(0);
+    var oldContacts = app.hbm().getContactList();
+    var rndContact = new Random();
+    var indexContact = rndContact.nextInt(oldContacts.size());
+    app.contact().addContactToGroup(oldContacts.get(indexContact), group);
+    var newContacts = app.hbm().getContactList();
+    Assertions.assertEquals(oldContacts.size(),
+        newContacts.size()); //Проверка что количество контактов не изменилось. Переделать на полноценную проверку со всем содержимым
+  }
+
   /*
+  //Тест создания контакта с проверкой списка контактов на странице UI
+  @ParameterizedTest
+  @MethodSource("contactProvider")
+  public void canCreateMultipleContactsWithUI(ContactData contact) {
+    var oldContacts = app.contact().getList();
+    app.contact().createContact(contact);
+    var newContacts = app.contact().getList();
+    Comparator<ContactData> compareById = (o1, o2) -> {
+      return Integer.compare(Integer.parseInt(o1.id()), Integer.parseInt(o2.id()));
+    };
+    newContacts.sort(compareById);
+    var expectedList = new ArrayList<>(oldContacts);
+    expectedList.add(
+        contact.withId(newContacts.get(newContacts.size() - 1).id()));
+    expectedList.sort(compareById);
+    Assertions.assertEquals(newContacts, newContacts);
+  }
+ 
   @Test
   public void canCreateMultipleContacts() {
     int n = 5;
