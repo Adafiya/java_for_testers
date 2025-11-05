@@ -1,7 +1,10 @@
 package tests;
 
+import static javax.swing.UIManager.get;
+
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 import model.ContactData;
 import model.GroupData;
@@ -53,14 +56,22 @@ public class ContactRemovalTests extends TestBase {
     if (app.hbm().getGroupCount() == 0) {
       app.hbm().createGroup(new GroupData("", "group name", "group header", "group_footer"));
     }
-    //Выбираем группу, в которую будет включен контакт
+    //Выбираем группу, из которой будет исключен контакт
     var group = app.hbm().getGroupList().get(0);
-    var oldContacts = app.hbm().getContactList();
+    var contacts = app.hbm().getContactList();
     var rndContact = new Random();
-    var indexContact = rndContact.nextInt(oldContacts.size());
-    app.contact().removeContactFromGroup(oldContacts.get(indexContact), group);
-    var newContacts = app.hbm().getContactList();
-    Assertions.assertEquals(oldContacts.size(),
-        newContacts.size()); //Проверка что количество контактов не изменилось. Переделать на полноценную проверку со всем содержимым
+    var indexContact = rndContact.nextInt(contacts.size());
+    List<ContactData> oldRelated;
+    //Проверка наличия контактов в выбранной группе и добавление контакта в группу, если его нет
+    if (!app.hbm().getContactsInGroup(group).contains(get(indexContact))) {
+      app.contact().addContactToGroup(contacts.get(indexContact), group);
+      oldRelated = app.hbm().getContactsInGroup(group);
+    } else {
+      oldRelated = app.hbm().getContactsInGroup(group);
+    }
+    app.contact().removeContactFromGroup(contacts.get(indexContact), group);
+    var newRelated = app.hbm().getContactsInGroup(group);
+    Assertions.assertEquals(oldRelated.size() - 1,
+        newRelated.size()); //Проверка что кол-во связей стало на 1 меньше
   }
 }

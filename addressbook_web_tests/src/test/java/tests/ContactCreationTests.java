@@ -108,13 +108,14 @@ public class ContactCreationTests extends TestBase {
     }
     //Выбираем группу, в которую будет включен контакт
     var group = app.hbm().getGroupList().get(0);
-    var oldContacts = app.hbm().getContactList();
+    var contacts = app.hbm().getContactList();
     var rndContact = new Random();
-    var indexContact = rndContact.nextInt(oldContacts.size());
-    app.contact().addContactToGroup(oldContacts.get(indexContact), group);
-    var newContacts = app.hbm().getContactList();
-    Assertions.assertEquals(oldContacts.size(),
-        newContacts.size()); //Проверка что количество контактов не изменилось. Переделать на полноценную проверку со всем содержимым
+    var indexContact = rndContact.nextInt(contacts.size());
+    var oldRelated = app.hbm().getContactsInGroup(group);
+    app.contact().addContactToGroup(contacts.get(indexContact), group);
+    var newRelated = app.hbm().getContactsInGroup(group);
+    Assertions.assertEquals(oldRelated.size() + 1,
+        newRelated.size()); //Проверка что кол-во связей стало на 1 больше
   }
 
   /*
@@ -135,7 +136,7 @@ public class ContactCreationTests extends TestBase {
     expectedList.sort(compareById);
     Assertions.assertEquals(newContacts, newContacts);
   }
- 
+
   @Test
   public void canCreateMultipleContacts() {
     int n = 5;
