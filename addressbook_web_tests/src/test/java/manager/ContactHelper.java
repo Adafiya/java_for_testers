@@ -1,5 +1,7 @@
 package manager;
 
+import static tests.TestBase.app;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -244,6 +246,21 @@ public class ContactHelper extends HelperBase {
       result.put(id, emails); //помещаем пару в map
     }
     return result;
+  }
+
+  //Ищем контакт без группы
+  public static ContactData getContactData(List<ContactData> contacts, GroupData group,
+      ContactData indexContact) {
+    //Перебираем список контактов
+    for (var contact : contacts) {
+      //Проверяем есть ли контакт в группе
+      if (!app.hbm().getContactsInGroup(group).contains(contact)) {
+        indexContact = contact;
+        //Как только находим подходящий контакт выходим из цикла
+        break;
+      }
+    }
+    return indexContact;
   }
 }
 

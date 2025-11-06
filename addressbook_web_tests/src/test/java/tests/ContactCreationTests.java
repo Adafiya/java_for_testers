@@ -1,5 +1,7 @@
 package tests;
 
+import static manager.ContactHelper.getContactData;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import common.CommonFunctions;
@@ -106,29 +108,14 @@ public class ContactCreationTests extends TestBase {
     //Выбираем группу, в которую будет включен контакт
     var group = app.hbm().getGroupList().get(0);
     var contacts = app.hbm().getContactList();
-    //Перебираем список контактов
-    for (var contact : contacts) {
-      //Проверяем есть ли контакт в группе
-      if (!app.hbm().getContactsInGroup(group).contains(contact)) {
-        indexContact = contact;
-        //Как только находим подходящий контакт выходим из цикла
-        break;
-      }
-    }
+    //Перебираем список контактов и находим контакт, который не включен в группу
+    indexContact = getContactData(contacts, group, indexContact);
     //Если нет контактов без группы, то создаем такой контакт и берем его
     if (indexContact == null) {
       app.contact().createContact(new ContactData().withFirstname("firstname").withMiddlename("middlename").withLastname("lastname"));
-      //app.hbm().createContact(new ContactData("", "firstname", "middlename", "lastname", "")); //Разобраться почему такое создание контакта не работает
       contacts = app.hbm().getContactList();
-      //Перебираем список контактов повторно (подумать как не повторть код)
-      for (var contact : contacts) {
-        //Проверяем есть ли контакт в группе
-        if (!app.hbm().getContactsInGroup(group).contains(contact)) {
-          indexContact = contact;
-          //Как только находим подходящий контакт выходим из цикла
-          break;
-        }
-      }
+      //Перебираем список контактов повторно
+      indexContact = getContactData(contacts, group, indexContact);
     }
     var oldRelated = app.hbm().getContactsInGroup(group);
     app.contact().addContactToGroup(indexContact, group);
