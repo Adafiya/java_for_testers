@@ -17,7 +17,8 @@ public class ContactRemovalTests extends TestBase {
   public void canRemoveContact() {
     if (app.hbm().getContactCount() == 0) {
       app.hbm().createContact(
-          new ContactData("", "firstname", "middlename", "lastname", ""));
+          new ContactData("", "firstname", "middlename", "lastname", "", "", "", "", "", "", "", "",
+              ""));
     }
     var oldContacts = app.hbm().getContactList();
     var rnd = new Random();
@@ -38,7 +39,8 @@ public class ContactRemovalTests extends TestBase {
   public void canRemoveAllContactsAtOnce() {
     if (app.contact().getCount() == 0) {
       app.contact().createContact(
-          new ContactData("", "firstname_remove", "middlename_remove", "lastname_remove", ""));
+          new ContactData("", "firstname_remove", "middlename_remove", "lastname_remove", "", "",
+              "", "", "", "", "", "", ""));
     }
     app.contact().removeAllContacts();
     Assertions.assertEquals(0, app.contact().getCount());
@@ -50,7 +52,8 @@ public class ContactRemovalTests extends TestBase {
     //Создаем контакт через БД, если его нет
     if (app.hbm().getContactCount() == 0) {
       app.hbm().createContact(
-          new ContactData("", "firstname", "middlename", "lastname", ""));
+          new ContactData("", "firstname", "middlename", "lastname", "", "", "", "", "", "", "", "",
+              ""));
     }
     //Создание группы через БД, если ее нет
     if (app.hbm().getGroupCount() == 0) {

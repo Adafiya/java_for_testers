@@ -1,7 +1,7 @@
 package manager;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import manager.hbm.ContactRecord;
 import manager.hbm.GroupRecord;
 import model.ContactData;
@@ -28,11 +28,14 @@ public class HibernateHelper extends HelperBase {
   }
 
   static List<GroupData> convertList(List<GroupRecord> records) {
+    return records.stream().map(HibernateHelper::convert).collect(Collectors.toList());
+    /*
     List<GroupData> result = new ArrayList<>();
     for (var record : records) {
       result.add(convert(record));
     }
     return result;
+     */
   }
 
   //GroupRecord преобразуем в GroupData
@@ -73,18 +76,25 @@ public class HibernateHelper extends HelperBase {
   }
 
   static List<ContactData> convertContactList(List<ContactRecord> records) {
+    return records.stream().map(HibernateHelper::convert).collect(Collectors.toList());
+    /*
     List<ContactData> result = new ArrayList<>();
     for (var record : records) {
       result.add(convert(record));
     }
     return result;
+     */
   }
 
   //ContactRecord преобразуем в ContactData
   private static ContactData convert(ContactRecord record) {
     return new ContactData().withId("" + record.id).withLastname(record.lastname)
         .withMiddlename(record.middlename)
-        .withFirstname(record.firstname);
+        .withFirstname(record.firstname)
+        .withHome(record.home)
+        .withMobile(record.mobile)
+        .withWork(record.work)
+        .withSecondary(record.phone2);
   }
 
   //ContactData преобразуем в ContactRecord
@@ -123,7 +133,7 @@ public class HibernateHelper extends HelperBase {
 
   public List<ContactData> getContactsInGroup(GroupData group) {
     return sessionFactory.fromSession(session -> {
-      return convertContactList(session.get(GroupRecord.class, group.id()).contacts);
+      return convertContactList(session.find(GroupRecord.class, group.id()).contacts);
     });
   }
 }

@@ -1,19 +1,16 @@
 package tests;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import common.CommonFunctions;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import model.GroupData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -62,31 +59,40 @@ public class GroupCreationTests extends TestBase {
     return result;
   }
 
-  //Создаем одну рандомную группу
+  //Создаем одну рандомную группу через стрим
+  public static Stream<GroupData> randomGroups() {
+    Supplier<GroupData> randomGroup = () -> new GroupData()
+        .withName(CommonFunctions.randomString(10))
+        .withHeader(CommonFunctions.randomString(20))
+        .withFooter(CommonFunctions.randomString(30));
+    return Stream.generate(randomGroup).limit(1);
+  }
+
+  /*
+  //Создаем одну рандомную группу через лист
   public static List<GroupData> singleRandomGroup() {
     return List.of(new GroupData()
         .withName(CommonFunctions.randomString(10))
         .withHeader(CommonFunctions.randomString(20))
         .withFooter(CommonFunctions.randomString(30)));
   }
+   */
 
   //Тест создания группы с проверкой группы в БД
   @ParameterizedTest
-  @MethodSource("singleRandomGroup")
+  @MethodSource("randomGroups")
   public void canCreateGroups(GroupData group) {
     var oldGroups = app.hbm().getGroupList();
     app.groups().createGroup(group);
     var newGroups = app.hbm().getGroupList();
-    Comparator<GroupData> compareById = (o1, o2) -> {
-      return Integer.compare(Integer.parseInt(o1.id()), Integer.parseInt(o2.id()));
-    };
-    newGroups.sort(compareById);
-    var maxId = newGroups.get(newGroups.size() - 1).id();
+    //var maxId = newGroups.get(newGroups.size() - 1).id();
+    //ищем группу, которой не было
+    var extraGroups = newGroups.stream().filter(g -> ! oldGroups.contains(g)).toList(); //toList то же самое, что и collect(Collectors.toList()
+    var newId = extraGroups.get(0).id(); //id отсутствовавшей группы
     var expectedList = new ArrayList<>(oldGroups);
     expectedList.add(
-        group.withId(maxId));
-    expectedList.sort(compareById);
-    Assertions.assertEquals(newGroups, expectedList);
+        group.withId(newId));
+    Assertions.assertEquals(Set.copyOf(newGroups), Set.copyOf(expectedList));
   }
 
   @ParameterizedTest

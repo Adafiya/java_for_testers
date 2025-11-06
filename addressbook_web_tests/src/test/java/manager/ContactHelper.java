@@ -1,9 +1,12 @@
 package manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.ContactData;
 import model.GroupData;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.By;
 
@@ -187,6 +190,60 @@ public class ContactHelper extends HelperBase {
               .withFirstname(String.valueOf(firstname)));
     }
     return contacts;
+  }
+
+  public String getPhones(ContactData contact) {
+    //String.format используем при '%s', /.. - подъем на каждый уровень вверх, td[6] - 6ая ячейка (phones), getText() - возвращаем текст
+    return manager.driver.findElement(
+        By.xpath(String.format("//input[@id='%s']/../../td[6]", contact.id()))).getText();
+  }
+
+  public String getAddress(ContactData contact) {
+    //String.format используем при '%s', /.. - подъем на каждый уровень вверх, td[4] - 4ая ячейка (address), getText() - возвращаем текст
+    return manager.driver.findElement(
+        By.xpath(String.format("//input[@id='%s']/../../td[4]", contact.id()))).getText();
+  }
+
+  public String getEmails(ContactData contact) {
+    //String.format используем при '%s', /.. - подъем на каждый уровень вверх, td[5] - 5ая ячейка(email), getText() - возвращаем текст
+    return manager.driver.findElement(
+        By.xpath(String.format("//input[@id='%s']/../../td[5]", contact.id()))).getText();
+  }
+
+  //Извлекаем пару id -телефон
+  public Map<String, String> getPhones() {
+    var result = new HashMap<String, String>();
+    List<WebElement> rows = manager.driver.findElements(By.name("entry"));
+    for (WebElement row : rows) {
+      var id = row.findElement(By.tagName("input")).getAttribute("id"); //извлекаем id
+      var phones = row.findElements(By.tagName("td")).get(5).getText(); //извлекаем ячейку 5 (phones) и берем ее текст
+      result.put(id, phones); //помещаем пару в map
+    }
+    return result;
+  }
+
+  //Извлекаем пару id - address
+  public Map<String, String> getAddress() {
+    var result = new HashMap<String, String>();
+    List<WebElement> rows = manager.driver.findElements(By.name("entry"));
+    for (WebElement row : rows) {
+      var id = row.findElement(By.tagName("input")).getAttribute("id"); //извлекаем id
+      var address = row.findElements(By.tagName("td")).get(3).getText(); //извлекаем ячейку 3 (address) и берем ее текст
+      result.put(id, address); //помещаем пару в map
+    }
+    return result;
+  }
+
+  //Извлекаем пару id - email
+  public Map<String, String> getEmails() {
+    var result = new HashMap<String, String>();
+    List<WebElement> rows = manager.driver.findElements(By.name("entry"));
+    for (WebElement row : rows) {
+      var id = row.findElement(By.tagName("input")).getAttribute("id"); //извлекаем id
+      var emails = row.findElements(By.tagName("td")).get(4).getText(); //извлекаем ячейку 4 (email) и берем ее текст
+      result.put(id, emails); //помещаем пару в map
+    }
+    return result;
   }
 }
 

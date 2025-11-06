@@ -2,23 +2,19 @@ package tests;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import common.CommonFunctions;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 import model.ContactData;
 import model.GroupData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.openqa.selenium.By;
 
 public class ContactCreationTests extends TestBase {
 
@@ -99,7 +95,8 @@ public class ContactCreationTests extends TestBase {
   public void addContactToGroup() {
     //Создаем контакт через БД, если его нет
     if (app.hbm().getContactCount() == 0) {
-      app.hbm().createContact(new ContactData("", "firstname", "middlename", "lastname", ""));
+      app.hbm().createContact(new ContactData("", "firstname", "middlename", "lastname", "", "", "",
+          "", "", "", "", "", ""));
     }
     //Создание группы через БД, если ее нет
     if (app.hbm().getGroupCount() == 0) {
