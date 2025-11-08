@@ -5,6 +5,7 @@ import ru.stqa.mantis.common.CommonFunctions;
 
 public class JamesTests extends TestBase {
 
+  //Тест создать пользователя (адрес) на почтовом сервере (JamesHelper)
   @Test
   void canCreateUser() {
     app.jamesCli().addUser(

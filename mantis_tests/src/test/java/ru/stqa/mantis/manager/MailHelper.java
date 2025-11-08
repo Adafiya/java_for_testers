@@ -1,5 +1,7 @@
 package ru.stqa.mantis.manager;
 
+import static ru.stqa.mantis.test.TestBase.app;
+
 import jakarta.mail.Flags.Flag;
 import jakarta.mail.Folder;
 import jakarta.mail.MessagingException;
@@ -10,12 +12,32 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import ru.stqa.mantis.model.MailMessage;
 
 public class MailHelper extends HelperBase {
 
   public MailHelper(ApplicationManager manager) {
     super(manager);
+  }
+
+  //Извлекаем ссылку из письма
+  public String extractedUrl(String email) {
+    //Получаем почту
+    var messages = app.mail().receive(email, "password", Duration.ofSeconds(10));
+    //Берем текст первого письма
+    var text = messages.get(0).content();
+    //Pattern (то что ниже) - описывает регуляр, на соответствие которому нужно что-то проверять
+    var pattern = Pattern.compile("http://\\S*");// \\s - пробел, \\S - НЕ пробел
+    //Проверяем текс на соответствие регуляра
+    var matcher = pattern.matcher(text);
+    String url = null;
+    //Проверяем содержится ли этот фрагмент в тексте
+    if (matcher.find()) {
+      //Узнаем начало и конец фрагмента
+      url = text.substring(matcher.start(), matcher.end());
+    }
+    return url;
   }
 
   //Получение почты

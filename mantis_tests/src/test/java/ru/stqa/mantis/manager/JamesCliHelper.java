@@ -9,6 +9,7 @@ public class JamesCliHelper extends HelperBase {
     super(manager);
   }
 
+  //Создать пользователя на почтовом сервере
   public void addUser(String email, String password) {
     CommandLine cmd = new CommandLine(
         "java", "-cp", "\"james-server-jpa-app.lib/*\"",

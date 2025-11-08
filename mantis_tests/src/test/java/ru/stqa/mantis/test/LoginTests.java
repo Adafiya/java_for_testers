@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 public class LoginTests extends TestBase {
 
+  //Тест логина под админом
   @Test
   void canLogin() {
     app.http().login("administrator", "root");
