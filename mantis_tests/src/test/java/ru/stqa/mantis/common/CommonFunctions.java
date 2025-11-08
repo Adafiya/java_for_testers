@@ -1,4 +1,4 @@
-package common;
+package ru.stqa.mantis.common;
 
 import java.util.Random;
 import java.util.function.Supplier;
@@ -16,13 +16,6 @@ public class CommonFunctions {
         .map(i -> 'a' + i) //передаем i и получаем a+i
         .map(Character::toString) //преобразуем символ в строку
         .collect(Collectors.joining()); //собираем строчки вместе
-    /*
-    var rnd = new Random();c
-    var result = "";
-    for (int i = 0; i < n; i++) {
-      result = result + (char) ('a' + rnd.nextInt(26));
-    }
-     */
     return result;
   }
 }
