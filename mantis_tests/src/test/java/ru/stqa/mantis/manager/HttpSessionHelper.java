@@ -15,20 +15,25 @@ public class HttpSessionHelper extends HelperBase {
 
   public HttpSessionHelper(ApplicationManager manager) {
     super(manager);
-    client = new OkHttpClient.Builder().cookieJar(new JavaNetCookieJar(new CookieManager())).build(); //Запоминаем куки
+    client = new OkHttpClient.Builder().cookieJar(new JavaNetCookieJar(new CookieManager()))
+        .build(); //Запоминаем куки
   }
 
   public void login(String username, String password) {
+    //Подготавливаем тело запроса
     RequestBody formBody = new FormBody.Builder()
         .add("username", username)
         .add("password", password)
         .build();
+    //Создаем запрос
     Request request = new Request.Builder()
         .url(String.format("%s/login.php", manager.property("web.baseUrl")))
         .post(formBody)
         .build();
     try (Response response = client.newCall(request).execute()) {
-      if (!response.isSuccessful()) throw new RuntimeException("Unexpected code " + response);
+      if (!response.isSuccessful()) {
+        throw new RuntimeException("Unexpected code " + response);
+      }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -40,7 +45,9 @@ public class HttpSessionHelper extends HelperBase {
             manager.property("web.baseUrl")) //Это get-запрос, ему тип get указывать не обязательно
         .build();
     try (Response response = client.newCall(request).execute()) {
-      if (!response.isSuccessful()) throw new RuntimeException("Unexpected code " + response);
+      if (!response.isSuccessful()) {
+        throw new RuntimeException("Unexpected code " + response);
+      }
       String body = response.body().string(); //Сохраняем ответ запроса в body
       return body.contains("<span class=\"user-info\">");
     } catch (IOException e) {
