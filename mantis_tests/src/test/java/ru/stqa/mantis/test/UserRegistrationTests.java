@@ -1,15 +1,21 @@
 package ru.stqa.mantis.test;
 
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import ru.stqa.mantis.common.CommonFunctions;
 
 public class UserRegistrationTests extends TestBase {
 
-  @Test
-  void canRegisterUser() { //ругается на параметр String username, добавила его внутрь теста
-    //Создаем username и email
-    var username = CommonFunctions.randomString(8);
+  public static Stream<String> randomUser() {
+    return Stream.of(CommonFunctions.randomString(5));
+  }
+
+  @ParameterizedTest
+  @MethodSource("randomUser")
+  void canRegisterUser(String username) { //username создается рандомно и подтягивается из randomUser
+    //Создаем email
     var email = String.format("%s@localhost", username);
     var password = "password";
     //Создаем пользователя (адрес) на почтовом сервере (JamesHelper)
