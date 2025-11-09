@@ -22,9 +22,9 @@ public class MailHelper extends HelperBase {
   }
 
   //Извлекаем ссылку из письма
-  public String extractedUrl(String email) {
+  public String extractedUrl(String email, String password) {
     //Получаем почту
-    var messages = app.mail().receive(email, "password", Duration.ofSeconds(10));
+    var messages = app.mail().receive(email, password, Duration.ofSeconds(10));
     //Берем текст первого письма
     var text = messages.get(0).content();
     //Pattern (то что ниже) - описывает регуляр, на соответствие которому нужно что-то проверять

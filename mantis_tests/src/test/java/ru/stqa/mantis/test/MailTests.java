@@ -24,6 +24,6 @@ public class MailTests extends TestBase {
   //Тест извлечения ссылки письма
   @Test
   void canExtractUser() {
-    app.mail().extractedUrl("user1@localhost");
+    app.mail().extractedUrl("user1@localhost", "password");
   }
 }
