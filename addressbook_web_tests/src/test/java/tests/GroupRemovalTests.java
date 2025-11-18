@@ -1,5 +1,6 @@
 package tests;
 
+import io.qameta.allure.Allure;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
@@ -21,10 +22,13 @@ public class GroupRemovalTests extends TestBase {
   //Удалить группу через список
   @Test
   public void canRemoveGroupWithList() {
-    //Создание группы через список
-    if (app.groups().getCount() == 0) {
-      app.groups().createGroup(new GroupData("", "group name", "group header", "group_footer"));
-    }
+    //Allure.step для отображения в отчете
+    Allure.step("Checking precondition", step ->{
+      //Создание группы через список
+      if (app.groups().getCount() == 0) {
+        app.groups().createGroup(new GroupData("", "group name", "group header", "group_footer"));
+      }
+    });
     var oldGroups = app.groups().getList();
     var rnd = new Random();
     var index = rnd.nextInt(oldGroups.size());
@@ -37,8 +41,10 @@ public class GroupRemovalTests extends TestBase {
     };
     newGroups.sort(compareById);
     expectedList.sort(compareById);
+    Allure.step("Validating results", step ->{
     Assertions.assertEquals(newGroups, expectedList); // Сравнение всех id и name списков до и после
     //Assertions.assertEquals(newGroups.size() - 1, oldGroups.size()); // Сравнение размера списков до и после
+    });
   }
 
   //Удалить группу с БД

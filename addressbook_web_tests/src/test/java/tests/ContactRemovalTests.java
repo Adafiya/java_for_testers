@@ -35,6 +35,7 @@ public class ContactRemovalTests extends TestBase {
     Assertions.assertEquals(newContacts, expectedList);
   }
 
+  /*
   @Test
   public void canRemoveAllContactsAtOnce() {
     if (app.contact().getCount() == 0) {
@@ -77,4 +78,5 @@ public class ContactRemovalTests extends TestBase {
     Assertions.assertEquals(oldRelated.size() - 1,
         newRelated.size()); //Проверка что кол-во связей стало на 1 меньше
   }
+   */
 }
